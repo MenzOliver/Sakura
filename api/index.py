@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             // Fazer a chamada para a API serverless da Vercel
             // A Vercel mapeia automaticamente a pasta /api para chamadas de API
-            const response = await fetch('/api/', {
+            const response = await fetch('/api/index', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
