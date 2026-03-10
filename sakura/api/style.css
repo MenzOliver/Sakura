@@ -1,0 +1,151 @@
+:root {
+    --sakura-pink-light: #fff0f3;
+    --sakura-pink: #fecdd3;
+    --sakura-pink-dark: #f06292;
+    --text-color: #4c1d95; /* Roxo escuro para o texto */
+    --input-border: #e9d5ff;
+    --button-gradient: linear_gradient(135deg, #f06292 0%, #a855f7 100%);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--sakura-pink-light);
+    /* Fundo de pétalas sutis */
+    background-image: 
+        radial-gradient(var(--sakura-pink) 20%, transparent 20%),
+        radial-gradient(var(--sakura-pink) 20%, transparent 20%);
+    background-position: 0 0, 50px 50px;
+    background-size: 100px 100px;
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.main-container {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.header-logo img {
+    max-width: 80%;
+    height: auto;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); /* Sombra para o logotipo de madeira */
+}
+
+.calculator-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    width: 100%;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* Sombra suave como na imagem */
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--sakura-pink-dark);
+}
+
+.input-group input::placeholder {
+    color: #a78bfa;
+    font-size: 14px;
+}
+
+button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background-image: var(--button-gradient);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(168, 85, 247, 0.2);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+button:hover {
+    box-shadow: 0 6px 12px rgba(168, 85, 247, 0.3);
+}
+
+button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(168, 85, 247, 0.2);
+}
+
+.hidden {
+    display: none;
+}
+
+.results-area, .error-message {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--input-border);
+}
+
+.results-area p {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.final-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #c026d3; /* Um tom de rosa mais escuro para o preço final */
+}
+
+.error-message {
+    color: #dc2626;
+    font-size: 14px;
+    text-align: center;
+}
+
+.footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.footer p {
+    font-size: 10px;
+    color: #a78bfa;
+}
