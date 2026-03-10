@@ -1,10 +1,9 @@
 :root {
-    --sakura-pink-light: #fff0f3;
-    --sakura-pink: #fecdd3;
-    --sakura-pink-dark: #f06292;
+    --sakura-pink-light: #ffe4e8; /* Fundo rosa liso e suave */
     --text-color: #4c1d95; /* Roxo escuro para o texto */
     --input-border: #e9d5ff;
-    --button-gradient: linear_gradient(135deg, #f06292 0%, #a855f7 100%);
+    /* Botão colorido (corrigido o traço no gradient) */
+    --button-gradient: linear-gradient(135deg, #d946ef 0%, #8b5cf6 100%);
 }
 
 * {
@@ -16,12 +15,7 @@
 
 body {
     background-color: var(--sakura-pink-light);
-    /* Fundo de pétalas sutis */
-    background-image: 
-        radial-gradient(var(--sakura-pink) 20%, transparent 20%),
-        radial-gradient(var(--sakura-pink) 20%, transparent 20%);
-    background-position: 0 0, 50px 50px;
-    background-size: 100px 100px;
+    /* Removidas as bolinhas/pétalas do fundo */
     color: var(--text-color);
     display: flex;
     justify-content: center;
@@ -48,7 +42,7 @@ body {
 .header-logo img {
     max-width: 80%;
     height: auto;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); /* Sombra para o logotipo de madeira */
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
 }
 
 .calculator-card {
@@ -56,7 +50,7 @@ body {
     border-radius: 20px;
     width: 100%;
     padding: 30px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* Sombra suave como na imagem */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 .input-group {
@@ -68,24 +62,26 @@ body {
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 14px;
+    color: #8b5cf6;
 }
 
 .input-group input {
     width: 100%;
     padding: 15px;
-    border: 1px solid var(--input-border);
+    border: 2px solid #f3e8ff;
     border-radius: 12px;
     font-size: 16px;
+    color: var(--text-color);
     transition: border-color 0.2s;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: var(--sakura-pink-dark);
+    border-color: #d946ef;
 }
 
 .input-group input::placeholder {
-    color: #a78bfa;
+    color: #c4b5fd;
     font-size: 14px;
 }
 
@@ -100,12 +96,12 @@ button {
     font-weight: bold;
     text-transform: uppercase;
     cursor: pointer;
-    box-shadow: 0 4px 6px rgba(168, 85, 247, 0.2);
+    box-shadow: 0 4px 6px rgba(168, 85, 247, 0.3);
     transition: transform 0.1s, box-shadow 0.1s;
 }
 
 button:hover {
-    box-shadow: 0 6px 12px rgba(168, 85, 247, 0.3);
+    box-shadow: 0 6px 12px rgba(168, 85, 247, 0.4);
 }
 
 button:active {
@@ -113,31 +109,45 @@ button:active {
     box-shadow: 0 2px 4px rgba(168, 85, 247, 0.2);
 }
 
+button:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
 .hidden {
     display: none;
 }
 
-.results-area, .error-message {
+/* --- BLOCO RETANGULAR DE RESULTADOS --- */
+.results-area {
     margin-top: 25px;
-    padding-top: 20px;
-    border-top: 1px dashed var(--input-border);
+    padding: 20px;
+    background-color: #faf5ff; /* Fundo roxinho bem claro */
+    border: 2px solid #e9d5ff; /* Borda da cor lilás */
+    border-radius: 12px;
+    text-align: center;
 }
 
 .results-area p {
-    font-size: 14px;
-    margin-bottom: 8px;
+    font-size: 15px;
+    margin-bottom: 12px;
 }
 
 .final-price {
     font-size: 18px;
     font-weight: bold;
-    color: #c026d3; /* Um tom de rosa mais escuro para o preço final */
+    color: #c026d3; /* Rosa/roxo mais forte para destaque */
+    margin-bottom: 0 !important;
 }
 
 .error-message {
+    margin-top: 20px;
     color: #dc2626;
     font-size: 14px;
     text-align: center;
+    background-color: #fef2f2;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .footer {
@@ -146,6 +156,6 @@ button:active {
 }
 
 .footer p {
-    font-size: 10px;
+    font-size: 11px;
     color: #a78bfa;
 }
