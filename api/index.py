@@ -1,85 +1,74 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const converterBtn = document.getElementById('converter-btn');
-    const valorJpyInput = document.getElementById('valor-jpy');
-    const pesoGramasInput = document.getElementById('peso-gramas');
-    
-    const resultsArea = document.getElementById('results-area');
-    const convertidoText = document.getElementById('convertido-text');
-    const finalText = document.getElementById('final-text');
-    
-    const errorMessage = document.getElementById('error-message');
+from http.server import BaseHTTPRequestHandler
+import json
+import requests
 
-    // Função para formatar moeda em BRL
-    const formatarBRL = (valor) => {
-        return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    };
+def obter_taxas():
+    response = requests.get("https://api.exchangerate-api.com/v4/latest/JPY")
+    if response.status_code == 200:
+        return response.json()['rates']
+    else:
+        raise Exception("Erro ao obter taxas de câmbio.")
 
-    // Função para formatar moeda em JPY
-    const formatarJPY = (valor) => {
-        return valor.toLocaleString('ja-JP', { style: 'currency', currency: 'JPY' });
-    };
+def conversao_yen(valor, moeda_origem, moeda_destino, taxas):
+    if moeda_origem in taxas and moeda_destino in taxas:
+        taxa_origem = taxas[moeda_origem]
+        taxa_destino = taxas[moeda_destino]
+        valor_em_yenes = valor / taxa_origem
+        valor_convertido = valor_em_yenes * taxa_destino
+        return valor_convertido
+    else:
+        raise ValueError("Conversão não suportada.")
 
-    converterBtn.addEventListener('click', async () => {
-        // Obter valores
-        const valorJpy = parseFloat(valorJpyInput.value);
-        const pesoGramas = parseFloat(pesoGramasInput.value);
+class handler(BaseHTTPRequestHandler):
+    def do_OPTIONS(self):
+        # Permite que o frontend converse com o backend sem ser bloqueado (CORS)
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
 
-        // Limpar estados anteriores
-        resultsArea.classList.add('hidden');
-        errorMessage.classList.add('hidden');
-        errorMessage.textContent = '';
+    def do_POST(self):
+        try:
+            # Lê os dados enviados pelo site
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length).decode('utf-8')
+            data = json.loads(post_data)
 
-        // Validação básica do frontend
-        if (!valorJpy || valorJpy <= 0) {
-            errorMessage.textContent = "Por favor, digite um valor em Yenes válido.";
-            errorMessage.classList.remove('hidden');
-            return;
-        }
+            valor = float(data.get('valor', 0))
+            peso = float(data.get('peso', 0))
 
-        if (!pesoGramas || pesoGramas <= 0) {
-            errorMessage.textContent = "Por favor, digite um peso em gramas válido.";
-            errorMessage.classList.remove('hidden');
-            return;
-        }
+            if valor <= 0:
+                 raise ValueError("O valor deve ser maior que zero.")
 
-        // Mostrar estado de carregamento (opcional, mas bom)
-        converterBtn.textContent = "CALCULANDO...";
-        converterBtn.disabled = true;
+            # Faz os cálculos
+            taxas = obter_taxas()
+            valor_convertido = conversao_yen(valor, 'JPY', 'BRL', taxas)
+            
+            X = valor_convertido * 1.2
+            parte1 = peso * 160 / 2000
+            parte2 = peso * 300 / 2000
+            resultado = X + parte1 + parte2
 
-        try {
-            // Fazer a chamada para a API serverless da Vercel
-            // A Vercel mapeia automaticamente a pasta /api para chamadas de API
-            const response = await fetch('/api/index', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    valor: valorJpy,
-                    peso: pesoGramas
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Sucesso: Exibir resultados
-                convertidoText.textContent = `${formatarJPY(data.jpy_origin)} JPY equivale a ${formatarBRL(data.brl_converted)}`;
-                finalText.textContent = `Valor final com cálculos adicionais: ${formatarBRL(data.final_result)}`;
-                resultsArea.classList.remove('hidden');
-            } else {
-                // Erro do backend (ex: valor <= 0)
-                errorMessage.textContent = `Erro do servidor: ${data.error || "Ocorreu um erro desconhecido."}`;
-                errorMessage.classList.remove('hidden');
+            # Prepara a resposta
+            response_data = {
+                "jpy_origin": valor,
+                "brl_converted": valor_convertido,
+                "final_result": resultado
             }
-        } catch (error) {
-            // Erro de rede ou de requisição
-            errorMessage.textContent = `Erro de conexão: ${error.message}`;
-            errorMessage.classList.remove('hidden');
-        } finally {
-            // Restaurar botão
-            converterBtn.textContent = "CONVERTER";
-            converterBtn.disabled = false;
-        }
-    });
-});
+
+            # Envia sucesso (200 OK) e os dados
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(json.dumps(response_data).encode('utf-8'))
+
+        except Exception as e:
+            # Se der erro, envia aviso de erro mas sem quebrar a conexão
+            self.send_response(400)
+            self.send_header('Content-type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            error_data = {"error": str(e)}
+            self.wfile.write(json.dumps(error_data).encode('utf-8'))
